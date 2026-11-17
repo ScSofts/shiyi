@@ -15,6 +15,10 @@ main                  ← 保护分支，永远能跑；合并需要 1 人 appro
 
 命名示例：`feature/upload`, `feature/people-page`, `fix/viewer-escape-key`, `chore/readme`
 
+> **仓库管理员**：`Settings → Branches → Add branch protection rule`，对 `main` 勾选
+> "Require a pull request before merging" + "Require approvals: 1"。
+> W1 期间可以先不开（方便大家初始化），W2 开始强制。
+
 ### 每天开工第一件事
 
 ```powershell
