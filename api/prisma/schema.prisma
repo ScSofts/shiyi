@@ -1,0 +1,109 @@
+// 负责人：C
+// 七张表。全组只有 C 改这个文件；要加字段先在群里说，再改这里 + 跑 npm run db:push。
+//
+// 向量不进数据库：人脸和图片向量存在 AI 服务的内存/JSON 里。
+// 这样就不用装 pgvector，clone 下来直接能跑。
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  assets Asset[]
+  people Person[]
+  albums Album[]
+}
+
+model Asset {
+  id           String    @id @default(cuid())
+  ownerId      String
+  filePath     String
+  thumbPath    String?
+  originalName String?
+  mimeType     String?
+  /// 拍摄时间（EXIF）；没有就用上传时间兜底。ISO UTC
+  takenAt      DateTime?
+  lat          Float?
+  lng          Float?
+  cameraModel  String?
+  width        Int?
+  height       Int?
+  isFavorite   Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+
+  owner   User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  persons AssetPerson[]
+  albums  AlbumAsset[]
+
+  @@index([ownerId, takenAt])
+}
+
+model Person {
+  id           String   @id @default(cuid())
+  ownerId      String
+  /// AI 服务里的人脸分组 id，用于和 Python 服务对齐
+  aiPersonId   String   @unique
+  name         String?
+  coverAssetId String?
+  faceCount    Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  owner User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  faces AssetPerson[]
+
+  @@index([ownerId])
+}
+
+model AssetPerson {
+  assetId  String
+  personId String
+
+  asset  Asset  @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  person Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@id([assetId, personId])
+}
+
+model Album {
+  id           String   @id @default(cuid())
+  ownerId      String
+  name         String
+  coverAssetId String?
+  createdAt    DateTime @default(now())
+
+  owner  User         @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  assets AlbumAsset[]
+  shares Share[]
+
+  @@index([ownerId])
+}
+
+model AlbumAsset {
+  albumId String
+  assetId String
+
+  album Album @relation(fields: [albumId], references: [id], onDelete: Cascade)
+  asset Asset @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@id([albumId, assetId])
+}
+
+model Share {
+  key       String    @id
+  albumId   String?
+  expiresAt DateTime?
+  viewCount Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  album Album? @relation(fields: [albumId], references: [id], onDelete: Cascade)
+}

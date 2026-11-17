@@ -1,0 +1,7 @@
+# 负责人：D
+# 基础依赖：装完就能用 mock 模式跑通整站（约 30MB，1 分钟装完）
+fastapi>=0.115
+uvicorn[standard]>=0.32
+pydantic>=2.9
+numpy>=1.26
+python-multipart>=0.0.12

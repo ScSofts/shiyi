@@ -1,0 +1,27 @@
+{
+  "name": "shiyi",
+  "version": "0.1.0",
+  "private": true,
+  "description": "拾忆 —— 个人影像管理与智能检索平台",
+  "scripts": {
+    "setup": "npm install && npm run setup:web && npm run setup:api",
+    "setup:web": "npm --prefix web install",
+    "setup:api": "npm --prefix api install && npm --prefix api run db:generate && npm --prefix api run db:push",
+    "setup:ai": "python -m pip install -r ai/requirements.txt",
+    "db:push": "npm --prefix api run db:push",
+    "db:studio": "npm --prefix api run db:studio",
+    "dev": "concurrently -n api,web,ai -c blue,green,magenta \"npm run dev:api\" \"npm run dev:web\" \"npm run dev:ai\"",
+    "dev:webapi": "concurrently -n api,web -c blue,green \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:web": "npm --prefix web run dev",
+    "dev:api": "npm --prefix api run dev",
+    "dev:ai": "cd ai && python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload",
+    "build:web": "npm --prefix web run build",
+    "typecheck": "npm --prefix web run typecheck && npm --prefix api run typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
