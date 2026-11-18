@@ -33,12 +33,17 @@
 
 ## 2. 分工总表（一句话版）
 
-| 同学 | 角色 | 一句话职责 | 主战场目录 |
-|---|---|---|---|
-| **A** | 前端 · 上传与浏览 | 让照片"进得来、看得见" | `web/src/pages/Timeline.tsx`、`web/src/components/` |
-| **B** | 前端 · 四种查找入口 | 让照片"找得着"：人物/地图/搜索/相册四个页面 | `web/src/pages/{People,Map,Search,Albums,Shared}.tsx` |
-| **C** | 后端 · 数据地基 | 让照片"存得住"：数据库、登录、上传、缩略图、EXIF | `api/prisma/`、`api/src/routes/{auth,assets}.ts`、`api/src/lib/` |
-| **D** | 后端 · 智能检索 | 让照片"能被搜到"：AI 服务 + 人物/搜索/地图接口 | `ai/`、`api/src/routes/{people,search,map}.ts` |
+### 成员对照表
+
+| 成员 | GitHub 用户名 | 角色 | 一句话职责 | 主战场目录 |
+|---|---|---|---|---|
+| **A** | `blihio`（仓库主） | 前端 · 上传与浏览 | 让照片"进得来、看得见" | `web/src/pages/Timeline.tsx`、`web/src/components/` |
+| **B** | `davonte60` | 前端 · 四种查找入口 | 让照片"找得着"：人物/地图/搜索/相册四个页面 | `web/src/pages/{People,Map,Search,Albums,Shared}.tsx` |
+| **C** | `superikun89562` | 后端 · 数据地基 | 让照片"存得住"：数据库、登录、上传、缩略图、EXIF | `api/prisma/`、`api/src/routes/{auth,assets}.ts`、`api/src/lib/` |
+| **D** | `scsofts` | 后端 · 智能检索 | 让照片"能被搜到"：AI 服务 + 人物/搜索/地图接口 | `ai/`、`api/src/routes/{people,search,map}.ts` |
+
+> **仓库**：<https://github.com/blihio/shiyi>
+> **每个人的 W1 任务**在 GitHub Issues 里（按你的用户名筛选 `Assigned to me`）。
 
 **为什么这样分**：两个人管"看得见的东西"，两个人管"存起来和搜得准的东西"。
 每个人的文件互不重叠，只有三处是全组共用（见 §5）。
