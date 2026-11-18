@@ -15,6 +15,17 @@ import PhotoGrid from '../components/PhotoGrid'
 
 const SUGGESTIONS = ['海边', '毕业', '火锅', '故宫', '西湖', '熊猫']
 
+/**
+ * 语义检索的相似度阈值：
+ * - 只要和第一名差得太多（>0.06）就不要 —— CLIP 会给每张图都算个分，
+ *   页面上全列出来就成了"搜索火锅却出现故宫"。
+ * - 同时要有一个绝对下限 0.38 —— 低于它说明库里没有相关内容，
+ *   宁可显示"没有找到"，也不要塞一堆不相关的图。
+ * （实测：火锅 0.44 / 熊猫 0.45 / 故宫 0.47 / 海边日落 0.43 / 西湖 0.45 / 毕业 0.43）
+ */
+const SCORE_MARGIN = 0.06
+const SCORE_FLOOR = 0.38
+
 export default function Search() {
   const [q, setQ] = useState('')
   const [submitted, setSubmitted] = useState('')
@@ -29,18 +40,24 @@ export default function Search() {
 
   const hits: SearchHit[] = search.data ?? []
 
-  // 合并：本地关键词命中同样算命中（补全 AI 的结果），AI 结果排在前面
+  // 合并：AI 语义结果（按阈值过滤）+ 本地关键词命中兜底
   const results = useMemo(() => {
     if (!submitted) return []
     const seen = new Set<string>()
     const out: Asset[] = []
 
+    // 1) AI 语义检索结果，只保留高分且和第一名接近的
+    const top = hits.length ? Math.max(...hits.map((h) => h.score)) : 0
+    const threshold = Math.max(top - SCORE_MARGIN, SCORE_FLOOR)
     for (const hit of hits) {
+      if (hit.score < threshold) continue
       if (hit.asset && !seen.has(hit.assetId)) {
         seen.add(hit.assetId)
         out.push(hit.asset)
       }
     }
+
+    // 2) 本地关键词兜底（文件名/城市包含关键词，比如搜"樱花"）
     for (const asset of allAssets) {
       const haystack = `${asset.originalName ?? ''} ${asset.city ?? ''}`
       if (haystack.includes(submitted) && !seen.has(asset.id)) {
