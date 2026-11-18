@@ -1,0 +1,8 @@
+# IDEA 里跟"当前这台机器/这个人"有关的文件，不进 git
+workspace.xml
+usage.statistics.xml
+tasks.xml
+shelf/
+httpRequests/
+misc.xml
+inspectionProfiles/

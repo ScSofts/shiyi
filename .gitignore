@@ -31,10 +31,22 @@ venv/
 ai/models/
 ai/data/
 
+# IntelliJ IDEA（只忽略个人文件，.idea/vcs.xml 等共享配置会提交）
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/tasks.xml
+.idea/shelf/
+.idea/httpRequests/
+.idea/misc.xml
+.idea/inspectionProfiles/
+*.iws
+*.iml
+
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+
 # 日志与临时文件
 *.log
 .DS_Store
 Thumbs.db
-.idea/
-.vscode/*
-!.vscode/extensions.json

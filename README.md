@@ -57,6 +57,46 @@ shiyi/
 
 ---
 
+## 0. 拿到代码（协作第一步）
+
+> **仓库地址**：<https://github.com/blihio/shiyi>
+>
+> 这是个**公开仓库**：任何人都能 clone，但**要推送必须先被加为协作者**。
+
+### 如果你是仓库主
+
+邀请队友：仓库页 → **Settings** → **Collaborators** → **Add people** → 输入队友 GitHub 用户名 → 发送邀请。
+队友点 **Accept invitation** 之后才有写权限。
+
+### 如果你是队友
+
+1. 把 **GitHub 用户名**发给仓库主，等邀请；收到后点接受
+2. clone 代码（**推荐 HTTPS，不用配 SSH**）
+
+```powershell
+git clone https://github.com/blihio/shiyi.git
+cd shiyi
+```
+
+> **为什么用 HTTPS**：公开仓库 clone 不需要登录，第一次 push 时弹窗登录 GitHub 即可。
+> 已经配好 SSH key 的话也可以用 `git clone git@github.com:blihio/shiyi.git`。
+>
+> ⚠️ 如果没被加为协作者就 `git push`，会报 `403 Permission denied` —— 这是权限问题，不是网络问题。
+
+### 分支规矩（四个人都必须遵守）
+
+```powershell
+git checkout -b feature/你的任务名      # 从 main 拉分支
+git add -A
+git commit -m "feat(xxx): 做了什么"
+git push -u origin feature/你的任务名   # 推自己的分支，不要直接推 main
+```
+
+然后在 GitHub 上对该分支发起 **Pull Request**，另一个人 review 后合并。
+详见 [`docs/dev-rules.md`](docs/dev-rules.md)。
+
+---
+
 ## 快速开始
 
 ### 前置：装两个东西
