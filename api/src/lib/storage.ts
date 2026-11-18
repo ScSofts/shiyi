@@ -17,3 +17,7 @@ export function publicUrl(absPath: string): string {
   const rel = path.relative(path.join(UPLOAD_DIR, '..'), absPath).split(path.sep).join('/')
   return `/${rel}`
 }
+
+export function thumbnailUrl(storedPath: string | null): string | undefined {
+  return storedPath?.replace(/^\/thumbs\//, '/uploads/thumb/')
+}

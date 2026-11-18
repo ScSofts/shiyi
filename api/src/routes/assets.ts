@@ -14,7 +14,7 @@ import { embedImage } from '../lib/ai'
 import { guessCity, readExif } from '../lib/exif'
 import { syncFacesFromAi } from '../lib/faces'
 import { prisma } from '../lib/prisma'
-import { publicUrl } from '../lib/storage'
+import { publicUrl, thumbnailUrl } from '../lib/storage'
 import { makeThumb } from '../lib/thumb'
 import { requireAuth } from '../middleware/auth'
 
@@ -47,7 +47,7 @@ function toDto(a: {
 }) {
   return {
     id: a.id,
-    thumbUrl: a.thumbPath ?? undefined,
+    thumbUrl: thumbnailUrl(a.thumbPath),
     fileUrl: a.filePath,
     originalName: a.originalName ?? undefined,
     takenAt: a.takenAt?.toISOString(),

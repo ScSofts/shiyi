@@ -6,6 +6,7 @@ import { Router } from 'express'
 
 import { semanticSearch } from '../lib/ai'
 import { prisma } from '../lib/prisma'
+import { thumbnailUrl } from '../lib/storage'
 import { requireAuth } from '../middleware/auth'
 
 export const searchRouter = Router()
@@ -30,7 +31,7 @@ searchRouter.get('/', requireAuth, async (req, res, next) => {
         data: fallback.map((a) => ({
           assetId: a.id,
           score: 0,
-          asset: { id: a.id, thumbUrl: a.thumbPath ?? undefined, originalName: a.originalName ?? undefined },
+          asset: { id: a.id, thumbUrl: thumbnailUrl(a.thumbPath), originalName: a.originalName ?? undefined },
         })),
       })
       return
@@ -48,7 +49,7 @@ searchRouter.get('/', requireAuth, async (req, res, next) => {
         .map((a) => ({
           assetId: a.id,
           score: scoreById.get(a.id) ?? 0,
-          asset: { id: a.id, thumbUrl: a.thumbPath ?? undefined, originalName: a.originalName ?? undefined },
+          asset: { id: a.id, thumbUrl: thumbnailUrl(a.thumbPath), originalName: a.originalName ?? undefined },
         })),
     })
   } catch (err) {

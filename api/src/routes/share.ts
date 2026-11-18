@@ -5,6 +5,7 @@
 import { Router } from 'express'
 
 import { prisma } from '../lib/prisma'
+import { thumbnailUrl } from '../lib/storage'
 
 export const shareRouter = Router()
 
@@ -31,7 +32,7 @@ shareRouter.get('/:key', async (req, res, next) => {
         album: { id: share.album.id, name: share.album.name },
         assets: share.album.assets.map(({ asset }) => ({
           id: asset.id,
-          thumbUrl: asset.thumbPath ?? undefined,
+          thumbUrl: thumbnailUrl(asset.thumbPath),
           fileUrl: asset.filePath,
           originalName: asset.originalName ?? undefined,
           takenAt: asset.takenAt?.toISOString(),

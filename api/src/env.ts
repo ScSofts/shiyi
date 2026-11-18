@@ -4,7 +4,7 @@
 import path from 'node:path'
 
 // data 目录固定在仓库根：shiyi/data
-export const ROOT_DIR = path.resolve(__dirname, '../../..')
+export const ROOT_DIR = path.resolve(__dirname, '../..')
 export const DATA_DIR = path.join(ROOT_DIR, 'data')
 export const UPLOAD_DIR = path.join(DATA_DIR, 'uploads')
 export const THUMB_DIR = path.join(DATA_DIR, 'thumbs')

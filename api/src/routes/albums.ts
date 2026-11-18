@@ -7,6 +7,7 @@ import { randomBytes } from 'node:crypto'
 import { Router } from 'express'
 
 import { prisma } from '../lib/prisma'
+import { thumbnailUrl } from '../lib/storage'
 import { requireAuth } from '../middleware/auth'
 
 export const albumsRouter = Router()
@@ -89,7 +90,7 @@ albumsRouter.get('/:id', requireAuth, async (req, res, next) => {
         name: album.name,
         assets: album.assets.map(({ asset }) => ({
           id: asset.id,
-          thumbUrl: asset.thumbPath ?? undefined,
+          thumbUrl: thumbnailUrl(asset.thumbPath),
           fileUrl: asset.filePath,
           originalName: asset.originalName ?? undefined,
           takenAt: asset.takenAt?.toISOString(),

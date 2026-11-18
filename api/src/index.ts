@@ -27,6 +27,7 @@ app.use(cors({ origin: CORS_ORIGIN }))
 app.use(express.json())
 
 // 照片和缩略图的静态访问
+app.use('/uploads/thumb', express.static(path.join(DATA_DIR, 'thumbs')))
 app.use('/uploads', express.static(path.join(DATA_DIR, 'uploads')))
 app.use('/thumbs', express.static(path.join(DATA_DIR, 'thumbs')))
 
