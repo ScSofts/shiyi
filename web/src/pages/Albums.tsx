@@ -4,11 +4,12 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { useAlbums, useCreateAlbum } from '../api/hooks'
+import { useAlbums, useCreateAlbum, useDeleteAlbum } from '../api/hooks'
 
 export default function Albums() {
   const { data: albums, isLoading, isError, error, refetch } = useAlbums()
   const create = useCreateAlbum()
+  const remove = useDeleteAlbum()
 
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
@@ -139,17 +140,28 @@ export default function Albums() {
       {header}
       <div className="grid grid-cols-[repeat(auto-fill,minmax(190px,1fr))] gap-4">
         {albums.map((album) => (
-          <Link
-            key={album.id}
-            to={`/albums/${album.id}`}
-            className="group overflow-hidden rounded-xl bg-slate-800/50 transition hover:bg-slate-800"
-          >
-            <div className="flex h-36 items-center justify-center bg-slate-700/40 text-4xl">📚</div>
-            <div className="p-3">
-              <div className="truncate text-sm text-slate-200">{album.name}</div>
-              <div className="text-xs text-slate-500">{album.count} 张</div>
-            </div>
-          </Link>
+          <div key={album.id} className="group relative overflow-hidden rounded-xl bg-slate-800/50 transition hover:bg-slate-800">
+            <Link to={`/albums/${album.id}`} className="block">
+              <div className="flex h-36 items-center justify-center bg-slate-700/40 text-4xl">📚</div>
+              <div className="p-3">
+                <div className="truncate text-sm text-slate-200">{album.name}</div>
+                <div className="text-xs text-slate-500">{album.count} 张</div>
+              </div>
+            </Link>
+            <button
+              title="删除相册"
+              onClick={() => {
+                if (!window.confirm(`删除相册「${album.name}」？\n\n照片不会被删除，只是不再属于这个相册。`)) return
+                remove.mutate(album.id, {
+                  onError: (err) => window.alert(err instanceof Error ? err.message : '删除失败'),
+                })
+              }}
+              disabled={remove.isPending}
+              className="absolute right-2 top-2 rounded-md bg-black/50 px-2 py-1 text-xs text-slate-300 opacity-0 transition hover:bg-rose-600 hover:text-white group-hover:opacity-100 disabled:opacity-30"
+            >
+              删除
+            </button>
+          </div>
         ))}
       </div>
       {createModal}

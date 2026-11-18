@@ -123,3 +123,19 @@ albumsRouter.post('/:id/share', requireAuth, async (req, res, next) => {
     next(err)
   }
 })
+
+/** DELETE /api/albums/:id —— 删除相册（照片本身不删，只解除关联；分享链接一起失效） */
+albumsRouter.delete('/:id', requireAuth, async (req, res, next) => {
+  try {
+    const album = await prisma.album.findFirst({ where: { id: req.params.id, ownerId: req.userId! } })
+    if (!album) {
+      res.status(404).json({ error: { code: 'NOT_FOUND', message: '相册不存在' } })
+      return
+    }
+    // AlbumAsset / Share 关系在 schema 里配了 onDelete: Cascade，删相册会自动清理
+    await prisma.album.delete({ where: { id: album.id } })
+    res.json({ data: { ok: true } })
+  } catch (err) {
+    next(err)
+  }
+})

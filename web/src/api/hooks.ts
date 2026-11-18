@@ -4,7 +4,7 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { api, apiPage, uploadWithProgress } from './client'
-import type { Album, AlbumDetailData, Asset, Person, SearchHit, ShareResp, SharedAlbum } from './types'
+import type { Album, AlbumDetailData, Asset, MapPoint, Person, SearchHit, ShareResp, SharedAlbum } from './types'
 
 /** 一页多少张（后端上限 100） */
 const PAGE_SIZE = 60
@@ -152,5 +152,25 @@ export function useSharedAlbum(key?: string) {
     enabled: Boolean(key),
     retry: false,
     queryFn: ({ signal }) => api<SharedAlbum>(`/share/${encodeURIComponent(key ?? '')}`, { signal }),
+  })
+}
+
+/** 删除相册（照片不会删，只删相册本身和关联） */
+export function useDeleteAlbum() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (albumId: string) =>
+      api<{ ok: boolean }>(`/albums/${encodeURIComponent(albumId)}`, { method: 'DELETE' }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ALBUMS_KEY })
+    },
+  })
+}
+
+/** 地图上有 GPS 的照片聚合点 */
+export function useMapPoints() {
+  return useQuery({
+    queryKey: ['map-points'],
+    queryFn: ({ signal }) => api<MapPoint[]>('/map/points', { signal }),
   })
 }
