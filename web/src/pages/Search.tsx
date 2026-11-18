@@ -40,7 +40,8 @@ export default function Search() {
 
   const hits: SearchHit[] = search.data ?? []
 
-  // 合并：AI 语义结果（按阈值过滤）+ 本地关键词命中兜底
+  // 合并：AI 语义结果（按阈值过滤）；**只有 AI 一张都没命中时**才启用文件名兜底
+  // （否则像"海边"这种词会把文件名里带"海边"但不相关的图硬塞进来）
   const results = useMemo(() => {
     if (!submitted) return []
     const seen = new Set<string>()
@@ -57,12 +58,14 @@ export default function Search() {
       }
     }
 
-    // 2) 本地关键词兜底（文件名/城市包含关键词，比如搜"樱花"）
-    for (const asset of allAssets) {
-      const haystack = `${asset.originalName ?? ''} ${asset.city ?? ''}`
-      if (haystack.includes(submitted) && !seen.has(asset.id)) {
-        seen.add(asset.id)
-        out.push(asset)
+    // 2) 语义检索无结果时才用文件名/城市兜底（例如搜"樱花"）
+    if (out.length === 0) {
+      for (const asset of allAssets) {
+        const haystack = `${asset.originalName ?? ''} ${asset.city ?? ''}`
+        if (haystack.includes(submitted) && !seen.has(asset.id)) {
+          seen.add(asset.id)
+          out.push(asset)
+        }
       }
     }
     return out
