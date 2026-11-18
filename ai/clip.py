@@ -16,6 +16,10 @@
 #      直接调 model.get_text_features() 在某些 transformers 版本会报
 #      "linear(): argument 'input' must be Tensor, not NoneType"。
 #      本文件已显式走 text_model + text_projection，绕开这个坑。
+#   3. 加载模型必须 low_cpu_mem_usage=False，否则参数在 meta device 上，
+#      手动调子模块会报 "Tensor on device cpu is not on the expected device meta!"，
+#      然后被 except 吞掉、静默退化成假向量（搜索看起来"能跑但结果乱"）。
+#   4. **静默降级很危险**：下面 catch 里会打印 [clip] ❌ 前缀，看到它就说明在用假向量。
 
 import hashlib
 import os
@@ -45,7 +49,14 @@ def _load_real_model():
         else "OFA-Sys/chinese-clip-vit-base-patch16"
     )
     print(f"[clip] 加载模型: {name}")
-    _model = ChineseCLIPModel.from_pretrained(name)
+    # ⚠️ 坑 3：必须 low_cpu_mem_usage=False。
+    # transformers 4.5x 默认用 meta device 做低内存加载，但这个模型手动调
+    # text_model / vision_model 子模块时会报 "Tensor on device cpu is not on the
+    # expected device meta!"，然后被下面的 except 吞掉、静默退化成假向量。
+    try:
+        _model = ChineseCLIPModel.from_pretrained(name, low_cpu_mem_usage=False)
+    except TypeError:
+        _model = ChineseCLIPModel.from_pretrained(name)
     _model.eval()
     _processor = ChineseCLIPProcessor.from_pretrained(name)
     return _model, _processor
@@ -92,7 +103,7 @@ def encode_image(image_path: str) -> list[float]:
         feats = feats / feats.norm(dim=-1, keepdim=True)
         return feats[0].tolist()
     except Exception as exc:  # noqa: BLE001
-        print(f"[clip] 真实模型不可用，用假向量兜底：{exc}")
+        print(f"[clip] ❌ 图片编码失败，用假向量兜底（搜索结果会乱！）：{exc}")
         return _fake_vector(f"image:{os.path.basename(image_path)}")
 
 
@@ -119,5 +130,5 @@ def encode_text(query: str) -> list[float]:
         feats = feats / feats.norm(dim=-1, keepdim=True)
         return feats[0].tolist()
     except Exception as exc:  # noqa: BLE001
-        print(f"[clip] 文本编码失败，用假向量兜底：{exc}")
+        print(f"[clip] ❌ 文本编码失败，用假向量兜底（搜索结果会乱！）：{exc}")
         return _fake_vector(f"text:{query}")

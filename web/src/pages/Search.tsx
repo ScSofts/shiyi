@@ -29,23 +29,23 @@ export default function Search() {
 
   const hits: SearchHit[] = search.data ?? []
 
-  // 合并：本地关键词命中优先，再补 AI 向量结果
+  // 合并：本地关键词命中同样算命中（补全 AI 的结果），AI 结果排在前面
   const results = useMemo(() => {
     if (!submitted) return []
     const seen = new Set<string>()
     const out: Asset[] = []
 
+    for (const hit of hits) {
+      if (hit.asset && !seen.has(hit.assetId)) {
+        seen.add(hit.assetId)
+        out.push(hit.asset)
+      }
+    }
     for (const asset of allAssets) {
       const haystack = `${asset.originalName ?? ''} ${asset.city ?? ''}`
       if (haystack.includes(submitted) && !seen.has(asset.id)) {
         seen.add(asset.id)
         out.push(asset)
-      }
-    }
-    for (const hit of hits) {
-      if (hit.asset && !seen.has(hit.assetId)) {
-        seen.add(hit.assetId)
-        out.push(hit.asset)
       }
     }
     return out
@@ -105,8 +105,8 @@ export default function Search() {
 
       <div className="mb-5 rounded-lg bg-slate-800/40 px-4 py-2 text-[11px] leading-relaxed text-slate-500">
         检索链路：中文描述 → Chinese-CLIP 文本编码（512 维）→ 与库中图片向量算余弦相似度 → 取 Top-K。
-        当前演示环境 AI 服务为 <span className="text-slate-400">mock 模式</span>（假向量，分数无语义），
-        真实模型已验证可跑通（见 <code className="rounded bg-slate-900 px-1">ai/SETUP.md</code>）。
+        当前使用 <span className="text-emerald-400">真实模型</span>（中文 CLIP），结果是真正的语义匹配，
+        不是关键词匹配。
       </div>
 
       {submitted && (

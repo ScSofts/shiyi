@@ -14,7 +14,8 @@
     "dev:webapi": "concurrently -n api,web -c blue,green \"npm run dev:api\" \"npm run dev:web\"",
     "dev:web": "npm --prefix web run dev",
     "dev:api": "npm --prefix api run dev",
-    "dev:ai": "cd ai && python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload",
+    "dev:ai": "cd ai && set MOCK_AI=0 && python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload",
+    "dev:ai:mock": "cd ai && set MOCK_AI=1 && python -m uvicorn main:app --host 127.0.0.1 --port 8000 --reload",
     "build:web": "npm --prefix web run build",
     "typecheck": "npm --prefix web run typecheck && npm --prefix api run typecheck"
   },
