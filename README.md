@@ -51,6 +51,7 @@ shiyi/
 └── docs/
     ├── roles-and-acceptance.md   # ★ 分工与验收标准（先看这个）
     ├── api-contract.md           # ★ 接口契约（改接口先改它）
+    ├── database.md               # ★ 数据库怎么用（查数据 / 重置 / 改表）
     └── dev-rules.md              # 开发规范
 ```
 
