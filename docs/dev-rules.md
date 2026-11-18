@@ -15,9 +15,18 @@ main                  ← 保护分支，永远能跑；合并需要 1 人 appro
 
 命名示例：`feature/upload`, `feature/people-page`, `fix/viewer-escape-key`, `chore/readme`
 
-> **仓库管理员**：`Settings → Branches → Add branch protection rule`，对 `main` 勾选
-> "Require a pull request before merging" + "Require approvals: 1"。
-> W1 期间可以先不开（方便大家初始化），W2 开始强制。
+> **仓库当前状态（已配置好，不用再改）**：
+> - `main` 已开启分支保护：**必须通过 PR 才能合并，需要 1 个人 approve**
+> - **禁止强制推送、禁止删除 main**
+> - 仓库主（admin）保留 bypass 权限，紧急情况可以直接推 main 救场
+> - 合并方式只允许 **Squash Merge**，合并后自动删除分支
+>
+> 所以队友直接 `git push origin main` 会看到：
+> ```
+> remote: error: GH006: Protected branch update failed for refs/heads/main.
+> remote: error: Changes must be made through a pull request.
+> ```
+> **这不是出错，是保护生效了**——去开 PR 就对了。
 
 ### 每天开工第一件事
 
